@@ -1,0 +1,21 @@
+# =========================================================================
+# KONFIGURASI NETLIFY — Cooksnap
+# =========================================================================
+# Situs ini statis (tidak ada build step), jadi publish dari root repo.
+# Folder functions berisi proxy serverless yang menyimpan API key Roboflow
+# sebagai environment variable, sehingga key TIDAK pernah dikirim ke browser.
+#
+# Set env var di dashboard Netlify:
+#   Site settings -> Environment variables -> ROBOFLOW_API_KEY = <key kamu>
+# (opsional) ROBOFLOW_MODEL_URL kalau ingin override model default.
+# =========================================================================
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Alias rapi: front-end memanggil /api/scan, diteruskan ke function 'scan'.
+[[redirects]]
+  from = "/api/scan"
+  to = "/.netlify/functions/scan"
+  status = 200
