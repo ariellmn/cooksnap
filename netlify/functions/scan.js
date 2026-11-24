@@ -95,14 +95,17 @@ async function callWithFailover(keys, models, send) {
     for (const model of models) {
       const response = await send(model, key);
       last = { response, model };
-      if (response.status === 429) continue;
+      // Otomatis pindah ke model berikutnya jika sibuk (429/503), error server Google (500), atau tidak ditemukan (404)
+      if ([429, 503, 500, 404].includes(response.status)) continue;
       if (response.status === 401 || response.status === 403) {
         keyCooldownUntil.set(key, Date.now() + BAD_KEY_COOLDOWN_MS);
         break;
       }
       return last;
     }
-    if (last.response.status === 429) keyCooldownUntil.set(key, Date.now() + KEY_COOLDOWN_MS);
+    if (last && last.response.status === 429) {
+      keyCooldownUntil.set(key, Date.now() + KEY_COOLDOWN_MS);
+    }
   }
   return last;
 }
