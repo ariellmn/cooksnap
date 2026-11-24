@@ -2,12 +2,15 @@
 # KONFIGURASI NETLIFY — Cooksnap
 # =========================================================================
 # Situs ini statis (tidak ada build step), jadi publish dari root repo.
-# Folder functions berisi proxy serverless yang menyimpan API key Roboflow
+# Folder functions berisi proxy serverless yang menyimpan API key Gemini
 # sebagai environment variable, sehingga key TIDAK pernah dikirim ke browser.
 #
 # Set env var di dashboard Netlify:
-#   Site settings -> Environment variables -> ROBOFLOW_API_KEY = <key kamu>
-# (opsional) ROBOFLOW_MODEL_URL kalau ingin override model default.
+#   Site settings -> Environment variables -> GEMINI_API_KEY = <key kamu>
+# Key cadangan (otomatis dipakai saat key sebelumnya kena limit 429):
+#   GEMINI_API_KEY_2, GEMINI_API_KEY_3, ... sampai GEMINI_API_KEY_9
+# (opsional) GEMINI_MODEL          default: gemini-3.5-flash-lite
+# (opsional) GEMINI_FALLBACK_MODEL default: gemini-3.1-flash-lite (dipakai saat 429)
 # =========================================================================
 
 [build]
@@ -18,4 +21,12 @@
 [[redirects]]
   from = "/api/scan"
   to = "/.netlify/functions/scan"
+  status = 200
+
+# Rekomendasi resep AI: /api/recipes -> function 'recipes'.
+# (opsional) GEMINI_RECIPE_MODEL          default: gemini-3.1-flash-lite
+# (opsional) GEMINI_RECIPE_FALLBACK_MODEL default: gemini-3.5-flash-lite
+[[redirects]]
+  from = "/api/recipes"
+  to = "/.netlify/functions/recipes"
   status = 200
